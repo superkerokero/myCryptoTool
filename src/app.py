@@ -5,7 +5,7 @@ from cryptoAPI import load_history, sort_by_mode, make_df
 
 
 def toCSV(event):
-    fname = fn.get()+".csv"
+    fname = "data/"+fn.get()+".csv"
     try:
         hist, s2i, i2s = load_history("data/cmc_history.json")
         df = make_df(sort_by_mode(hist, st.get(), et.get(), opt.get()))
@@ -18,7 +18,7 @@ def toCSV(event):
 
 
 def toExcel(event):
-    fname = fn.get()+".xlsx"
+    fname = "data/"+fn.get()+".xlsx"
     try:
         hist, s2i, i2s = load_history("data/cmc_history.json")
         df = make_df(sort_by_mode(hist, st.get(), et.get(), opt.get()))
@@ -58,7 +58,8 @@ tk.Radiobutton(root,
 tk.Radiobutton(root,
                text="现价相对于指定期间低点涨幅", variable=opt, value=3).pack(anchor=tk.W)
 
-tk.Label(root, text="输出文件名", foreground='#000000', background='#aaaaff').pack()
+tk.Label(root, text="输出文件名(data文件夹内)", foreground='#000000',
+         background='#aaaaff').pack()
 fn = tk.StringVar()
 tk.Entry(root, width=50, textvariable=fn).pack()
 fn.set("output")
