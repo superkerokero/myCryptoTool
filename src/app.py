@@ -37,10 +37,7 @@ def toExcel(event):
 
 def update(event):
     messagebox.showinfo('info',
-                        """更新历史数据耗时较久，视网络环境需时20到40分钟，
-                        输出文件名下方的进度条显示当前的更新进度，
-                        背后的命令行窗口会输出目前处理中的加密货币ID和符号，
-                        coinmarkectcap目前共有1500多种加密货币""")
+                        """更新历史数据耗时较久，视网络环境需时20到40分钟，输出文件名下方的进度条显示当前的更新进度，背后的命令行窗口会输出目前处理中的加密货币ID和符号(coinmarkectcap目前共有1500多种加密货币)""")
     cmc = Market()
     listing = [item['symbol'] for item in cmc.listings()['data']]
     hist = dict()
