@@ -1,5 +1,22 @@
 # myCryptoTool
-A GUI tool based on python/tkinter for cryptocurrency price analysis.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 介绍
+
+`myCryptoTool`是一个简单的基于Python和Tkinter的加密货币价格分析工具。
+通过爬取[coinmarketcap.com](https://coinmarketcap.com/)上的加密货币价格信息来实现各种不同标准的排序功能。
+
+![app_interface](img/app_interface.png)
+
+目前支持的功能为按照以下标准对有记录的所有加密货币进行排序：
+
+* 指定区间内高点对低点涨幅
+* 现价相对于初始价涨幅
+* 现价相对于历史低点涨幅
+* 现价相对于指定期间低点涨幅
+
+预计以后将会追加更多的功能。另外欢迎通过pull request的方式来为此app追加功能。
 
 ## 安装及运行
 
