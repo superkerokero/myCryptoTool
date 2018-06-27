@@ -66,32 +66,40 @@ def get_current_price(cid):
     return cmc.ticker(cid)["data"]["quotes"]["USD"]["price"]
 
 
-def sort_by_mode(hist, st, et, mode):
+def sort_by_mode(hist, st, et, mode, coin_list):
     """Sort price data by section."""
     ret = list()
-    for key, val in hist.items():
+    if coin_list == "":
+        li = hist.keys()
+    else:
+        li = coin_list.split()
+    for key in li:
         try:
-            ist = val["t"].index(st)
+            ist = hist[key]["t"].index(st)
         except ValueError:
             ist = -1
         try:
-            iet = val["t"].index(et)
+            iet = hist[key]["t"].index(et)
         except ValueError:
             iet = 0
         if ist == -1:
-            high_price = max(val["p"][iet:]) 
-            low_price = min(val["p"][iet:])
+            high_price = max(hist[key]["p"][iet:]) 
+            low_price = min(hist[key]["p"][iet:])
         else:
-            high_price = max(val["p"][iet:ist+1]) 
-            low_price = min(val["p"][iet:ist+1])
-        high_price_all = max(val["p"])
-        low_price_all = min(val["p"])
-        ret.append((key, val["p"][-1], val["p"][0], high_price_all,
+            high_price = max(hist[key]["p"][iet:ist+1]) 
+            low_price = min(hist[key]["p"][iet:ist+1])
+        high_price_all = max(hist[key]["p"])
+        low_price_all = min(hist[key]["p"])
+        ret.append((key, hist[key]["p"][-1], hist[key]["p"][0], high_price_all,
                     low_price_all, high_price, low_price,
-                    (val["p"][0] - val["p"][-1]) / val["p"][-1], 
-                    (val["p"][0] - low_price_all) / low_price_all,
-                    (val["p"][0] - low_price) / low_price,
-                    (high_price - low_price) / low_price))
+                    (hist[key]["p"][0] -
+                     hist[key]["p"][-1]) / hist[key]["p"][-1],
+                    (hist[key]["p"][0] -
+                     low_price_all) / low_price_all,
+                    (hist[key]["p"][0] -
+                     low_price) / low_price,
+                    (high_price -
+                     low_price) / low_price))
     if mode == 0:
         ret.sort(key=lambda x: x[-1], reverse=True)
     elif mode == 1:
