@@ -4,44 +4,51 @@ import pandas as pd
 from coinmarketcap import Market
 from cryptocmd import CmcScraper
 import json
-from cryptoAPI import load_history, sort_by_mode, make_df, get_id_table
+from cryptoAPI import load_history, sort_by_mode, make_df, get_id_table, get_latest_data
+
+
+def toFile(event, ftype="excel"):
+    try:
+        if ptype.get() == 0:
+            hist, s2i, i2s = load_history("cmc_history.json")
+        elif ptype.get() == 1:
+            if coin_list.get() == "":
+                messagebox.showinfo('info', "获取最新数据时币种不能为空!")
+            else:
+                s2i, i2s = get_id_table()
+                hist = get_latest_data(coin_list.get())
+        else:
+            messagebox.showinfo('info', "非法ptype: {0}".format(ptype.get()))
+        df = make_df(sort_by_mode(hist, st.get(), et.get(),
+                     opt.get(), coin_list.get(), s2i, ptype.get()))
+        if ftype == "csv":
+            fname = fn.get()+".csv"
+            df.to_csv(fname)
+            messagebox.showinfo('info', "成功输出文件: {0}".format(fname))
+        elif ftype == "excel":
+            fname = fn.get()+".xlsx"
+            writer = pd.ExcelWriter(fname)
+            df.to_excel(writer, 'Sheet1')
+            writer.save()
+            messagebox.showinfo('info', "成功输出文件: {0}".format(fname))
+        else:
+            messagebox.showinfo('info', "非法文件类型: {0}".format(ftype))
+    except ValueError:
+        messagebox.showinfo('info', "数值错误，请检查输入区间是否合法")
+    except KeyError as err:
+        messagebox.showinfo('info', "未知币种：{0}".format(err))
+    except FileNotFoundError:
+        messagebox.showinfo('info', "加载数据错误，如果第一次打开本app, 请首先点击右下角【更新数据】按钮更新数据")
+    # except:
+    #     messagebox.showinfo('info', "未知错误")
 
 
 def toCSV(event):
-    fname = fn.get()+".csv"
-    try:
-        hist, s2i, i2s = load_history("cmc_history.json")
-        df = make_df(sort_by_mode(hist, st.get(), et.get(), opt.get(), coin_list.get()))
-        df.to_csv(fname)
-        messagebox.showinfo('info', "成功输出文件: {0}".format(fname))
-    except ValueError:
-        messagebox.showinfo('info', "数值错误，请检查输入区间是否合法")
-    except KeyError as err:
-        messagebox.showinfo('info', "未知币种：{0}".format(err))
-    except FileNotFoundError:
-        messagebox.showinfo('info', "加载数据错误，如果第一次打开本app, 请首先点击右下角【更新数据】按钮更新数据")
-    except:
-        messagebox.showinfo('info', "未知错误")
+    toFile(event, ftype="csv")
 
 
 def toExcel(event):
-    fname = fn.get()+".xlsx"
-    try:
-        hist, s2i, i2s = load_history("cmc_history.json")
-        df = make_df(sort_by_mode(hist, st.get(), et.get(), opt.get(),
-                     coin_list.get()))
-        writer = pd.ExcelWriter(fname)
-        df.to_excel(writer, 'Sheet1')
-        writer.save()
-        messagebox.showinfo('info', "成功输出文件: {0}".format(fname))
-    except ValueError:
-        messagebox.showinfo('info', "数值错误，请检查输入区间是否合法")
-    except KeyError as err:
-        messagebox.showinfo('info', "未知币种：{0}".format(err))
-    except FileNotFoundError:
-        messagebox.showinfo('info', "加载数据错误，如果第一次打开本app, 请首先点击右下角【更新数据】按钮更新数据")
-    except:
-        messagebox.showinfo('info', "未知错误")
+    toFile(event, ftype="excel")
 
 
 def update_date():
@@ -98,7 +105,7 @@ def update(event):
 
 root = tk.Tk()
 root.title("myCryptoTool")
-root.geometry("200x330")
+root.geometry("200x380")
 
 tk.Label(root, text="开始时间", foreground='#000000', background='#ffaacc').pack()
 
@@ -140,6 +147,12 @@ progress.pack(fill=tk.X, padx=20)
 data_date = tk.Label(root, text="数据更新至：??", foreground='#000000')
 data_date.pack()
 update_date()
+
+ptype = tk.IntVar()
+tk.Radiobutton(root,
+               text="使用现有离线数据", variable=ptype, value=0).pack(anchor=tk.W)
+tk.Radiobutton(root,
+               text="从网站获取最新数据", variable=ptype, value=1).pack(anchor=tk.W)
 
 btn1 = tk.Button(root, text="输出csv")
 btn1.bind("<Button-1>", toCSV)

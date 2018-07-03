@@ -24,7 +24,31 @@ def get_history_all():
                 p=pr
             )
         except Exception:
-            print("Invalid coin ssymbol: {0}".format(x))
+            print("Invalid coin symbol: {0}".format(x))
+        print(i, x)
+    return ret
+
+
+def get_latest_data(coin_list):
+    """Get latest price data for given coin list."""
+    li = coin_list.split()
+    ret = dict()
+    for i, x in enumerate(li):
+        scr = CmcScraper(x)
+        try:
+            header, data = scr.get_data()
+            ti = list()
+            pr = list()
+            for j, xx in enumerate(data):
+                if xx[4]:
+                    pr.append(xx[4])
+                    ti.append(xx[0])
+            ret[x] = dict(
+                t=ti,
+                p=pr
+            )
+        except Exception:
+            print("Invalid coin symbol: {0}".format(x))
         print(i, x)
     return ret
 
@@ -66,7 +90,7 @@ def get_current_price(cid):
     return cmc.ticker(cid)["data"]["quotes"]["USD"]["price"]
 
 
-def sort_by_mode(hist, st, et, mode, coin_list):
+def sort_by_mode(hist, st, et, mode, coin_list, s2i, use_latest=0):
     """Sort price data by section."""
     ret = list()
     if coin_list == "":
@@ -90,13 +114,17 @@ def sort_by_mode(hist, st, et, mode, coin_list):
             low_price = min(hist[key]["p"][iet:ist+1])
         high_price_all = max(hist[key]["p"])
         low_price_all = min(hist[key]["p"])
-        ret.append((key, hist[key]["p"][-1], hist[key]["p"][0], high_price_all,
+        if use_latest == 1:
+            latestPrice = get_current_price(s2i[key])
+        else:
+            latestPrice = hist[key]["p"][0]
+        ret.append((key, hist[key]["p"][-1], latestPrice, high_price_all,
                     low_price_all, high_price, low_price,
-                    (hist[key]["p"][0] -
+                    (latestPrice -
                      hist[key]["p"][-1]) / hist[key]["p"][-1],
-                    (hist[key]["p"][0] -
+                    (latestPrice -
                      low_price_all) / low_price_all,
-                    (hist[key]["p"][0] -
+                    (latestPrice -
                      low_price) / low_price,
                     (high_price -
                      low_price) / low_price))
